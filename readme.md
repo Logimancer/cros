@@ -1,8 +1,7 @@
 # Core Registry Operating System (crOS)
 
 ## OS Summary
-**Core Registry OS (crOS)** is a minimalist, hardware-direct operating system designed for [Single Address Space (SASOS)](https://en.wikipedia.org/wiki/Single_address_space_operating_system) environments. It prioritizes [zero-abstraction memory access](https://en.wikipedia.org/wiki/Flat_memory_model) and physical terminal compatibility. 
-
+**Core Registry OS (crOS)** is a minimalist, hardware-direct operating system designed for [Single Address Space (SASOS)](https://en.wikipedia.org/wiki/Single_address_space_operating_system) environments.
 Its main objectives are:
 
 - **Flat Memory Sovereignty:** To maintain a completely linear and contiguous address space where [primary memory is the only namespace](https://wiki.c2.com/?SingleAddressSpaceOperatingSystem). By avoiding folders or file systems, every command and data block is just a direct pointer to a specific memory address.
