@@ -27,3 +27,6 @@ create "./vscode/settings.json" with contents:
     "rust-analyzer.cargo.target": "aarch64-unknown-none"
 }
 ```
+
+#### Notes
+Research ARMv8-A hardware-based protection and virtualization for SASOS.
