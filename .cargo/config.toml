@@ -1,0 +1,3 @@
+[target.aarch64-unknown-none]
+#runner = "echo 'Please copy kernel8.img to SD card'"
+rustflags = ["-C", "link-arg=-Tlinker.ld"]

@@ -1,0 +1,23 @@
+[package]
+name = "cros"
+version = "0.1.0"
+edition = "2024"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
+[dependencies]
+aarch64-cpu = "11.2.0"
+cortex-a = "8.1.1"
+critical-section = { version = "1.2.0", features = ["restore-state-u64"] } 
+embedded-alloc = "0.7.0"
+linked_list_allocator = { version = "0.10", features = ["const_mut_refs"] }
+spin = "0.10.0"
+
+
+[features]
+default = ["pi4"]
+pi4 = []

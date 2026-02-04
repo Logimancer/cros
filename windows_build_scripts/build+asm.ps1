@@ -1,0 +1,1 @@
+cross asm --target aarch64-unknown-none --bin cros --intel --simplify _start
