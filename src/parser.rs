@@ -1,5 +1,4 @@
 use crate::drivers::uart::UART;
-use crate::runtime::core_registry::REGISTRY;
 pub struct CommandParser {
     buffer: [u8; 64],
     index: usize,
@@ -50,19 +49,11 @@ fn execute(&mut self) {
         if cmd_name.is_empty() {
             return;
         }
-        
-        // 1. Find the function pointer and "copy" it out
+
         let command_to_run = {
-            let reg = REGISTRY.lock();
-            
-            // Look for the entry and return the function pointer
-            let func_ptr = match reg.iter().find(|e| e.name == cmd_name) {
-                Some(entry) => Some(entry.func),
-                None => None,
-            };
-            
-            // Lock drops here automatically when this block ends!
-            func_ptr
+            let reg = crate::runtime::core_registry::get_registry().lock();
+            // .get() returns Option<&CommandFn>, .cloned() turns it into Option<CommandFn>
+            reg.symbols.get(cmd_name).cloned()
         };
 
         // 2. Execute the function without holding ANY locks

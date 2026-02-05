@@ -14,6 +14,7 @@ aarch64-cpu = "11.2.0"
 cortex-a = "8.1.1"
 critical-section = { version = "1.2.0", features = ["restore-state-u64"] } 
 embedded-alloc = "0.7.0"
+hashbrown = "0.16.1"
 linked_list_allocator = { version = "0.10", features = ["const_mut_refs"] }
 spin = "0.10.0"
 
