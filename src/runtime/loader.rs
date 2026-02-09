@@ -1,12 +1,15 @@
 use crate::api::CoreRegistry;
 use crate::runtime::core_registry;
+use core::ptr::addr_of_mut;
 use core::mem::transmute;
 
 /// This bridge is what we hand to the command. 
-static CORE_REGISTRY_BRIDGE: CoreRegistry = CoreRegistry {
+pub static CORE_REGISTRY_BRIDGE: CoreRegistry = CoreRegistry {
     // Ensure this field name matches exactly what is in src/api.rs
     symbol_lookup: core_registry::symbol_lookup,
 };
+
+pub type CommandEntry = extern "C" fn(&crate::api::CoreRegistry);
 
 pub struct Loader;
 
@@ -42,17 +45,18 @@ impl Loader {
         crate::println!("--- Executing Command ---");
 
         // The actual jump/call is also an unsafe operation
-        unsafe {
-            entry_point(&CORE_REGISTRY_BRIDGE);
-        }
+        entry_point(&CORE_REGISTRY_BRIDGE);
 
         crate::println!("--- Command Finished ---");
     }
 
-    /// Helper for your core_registry.rs init loop
-    pub fn load_and_register(name: &str, _code: &[u8]) -> Result<(), ()> {
-        // This allows your registry to trigger the loader
-        Self::run(name);
-        Ok(())
-    }
-}
+// In your loader:
+pub fn load_and_register(name: &'static str, code: &'static [u8]) -> Result<(), ()> {
+    let entry: CommandEntry = unsafe { core::mem::transmute(code.as_ptr()) };
+    
+    // Ensure your register function in core_registry.rs accepts `CommandEntry`
+    crate::runtime::core_registry::register(name, entry);
+    
+    Ok(())
+} 
+}   

@@ -3,14 +3,13 @@ use hashbrown::HashMap;
 use spin::{Mutex, Once};
 use crate::{commands::binaries, runtime::loader::Loader};
 
-pub type CommandFn = fn();
+pub type CommandFn = extern "C" fn(&crate::api::CoreRegistry);
 
 pub struct CoreRegistry {
     // Renamed from 'commands' to 'symbols'
     pub symbols: HashMap<String, CommandFn>,
 }
 
-// Renamed to 'REGISTRY' as requested
 pub static REGISTRY: Once<Mutex<CoreRegistry>> = Once::new();
 
 /// Internal helper to ensure the registry is initialized safely
@@ -23,16 +22,13 @@ pub fn get_registry() -> &'static Mutex<CoreRegistry> {
 }
 
 /// The actual printing logic that stays ONLY in the kernel.
-pub extern "C" fn kernel_sys_print(ptr: *const u8, len: usize) {
+pub fn sys_print(ptr: *const u8, len: usize) {
     // Safety: We assume the command passed a valid UTF-8 pointer
     let s = unsafe { 
         core::str::from_utf8_unchecked(core::slice::from_raw_parts(ptr, len)) 
     };
     crate::print!("{}", s); 
 }
-
-// In your registry initialization function:
-reg.symbols.insert("sys_print".into(), kernel_sys_print as usize);
 
 pub fn register(name: &str, func: CommandFn) {
     let mut reg = get_registry().lock();

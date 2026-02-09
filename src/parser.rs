@@ -1,4 +1,5 @@
-use crate::drivers::uart::UART;
+use crate::{api::CoreRegistry, drivers::uart::UART};
+use alloc::vec::Vec;
 pub struct CommandParser {
     buffer: [u8; 64],
     index: usize,
@@ -53,12 +54,14 @@ fn execute(&mut self) {
         let command_to_run = {
             let reg = crate::runtime::core_registry::get_registry().lock();
             // .get() returns Option<&CommandFn>, .cloned() turns it into Option<CommandFn>
+            println!("Looking up command: '{}'", cmd_name);
+            println!("symbols: {}", reg.symbols.keys().cloned().collect::<Vec<_>>().join(", "));
             reg.symbols.get(cmd_name).cloned()
         };
-
+        
         // 2. Execute the function without holding ANY locks
         if let Some(func) = command_to_run {
-            func(); 
+            func(&crate::runtime::loader::CORE_REGISTRY_BRIDGE);
         } else {
             println!("Unknown: {}", cmd_name);
         }
